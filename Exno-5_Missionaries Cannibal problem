@@ -1,0 +1,33 @@
+print("192311371-Niyaz")
+from collections import deque
+
+def valid(m, c):  # Check for valid state
+    return 0 <= m <= 3 and 0 <= c <= 3 and (m == 0 or m >= c) and (3 - m == 0 or 3 - m >= 3 - c)
+
+def successors(state):
+    m, c, b = state
+    moves = [(1,0),(2,0),(0,1),(0,2),(1,1)]
+    for dm, dc in moves:
+        if b == 1:
+            nm, nc, nb = m - dm, c - dc, 0
+        else:
+            nm, nc, nb = m + dm, c + dc, 1
+        if valid(nm, nc):
+            yield (nm, nc, nb)
+
+def solve():
+    start, goal = (3,3,1), (0,0,0)
+    q = deque([(start, [start])])
+    visited = set()
+    while q:
+        state, path = q.popleft()
+        if state == goal:
+            return path
+        for s in successors(state):
+            if s not in visited:
+                visited.add(s)
+                q.append((s, path + [s]))
+
+# Run and display result
+for step in solve():
+    print(step)
