@@ -1,0 +1,31 @@
+print("192311371-Niyaz")
+from itertools import permutations
+
+def tsp(graph, start=0):
+    n = len(graph)
+    min_cost = float('inf')
+    best_path = []
+    
+    for perm in permutations(range(n)):
+        if perm[0] != start:
+            continue
+        cost = 0
+        for i in range(n - 1):
+            cost += graph[perm[i]][perm[i + 1]]
+        cost += graph[perm[-1]][perm[0]]  # return to start
+        if cost < min_cost:
+            min_cost = cost
+            best_path = perm + (perm[0],)
+    
+    print("Minimum cost:", min_cost)
+    print("Best path:", best_path)
+
+# Example usage
+graph = [
+    [0, 29, 20, 21],
+    [29, 0, 15, 17],
+    [20, 15, 0, 28],
+    [21, 17, 28, 0]
+]
+
+tsp(graph)
