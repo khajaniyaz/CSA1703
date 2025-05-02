@@ -1,0 +1,42 @@
+print(" 192311371-Niyaz")
+regions = ['WA', 'NT', 'SA', 'Q', 'NSW', 'V', 'T']
+colors = ['Red', 'Green', 'Blue']
+neighbors = {
+    'WA': ['NT', 'SA'],
+    'NT': ['WA', 'SA', 'Q'],
+    'SA': ['WA', 'NT', 'Q', 'NSW', 'V'],
+    'Q': ['NT', 'SA', 'NSW'],
+    'NSW': ['Q', 'SA', 'V'],
+    'V': ['SA', 'NSW'],
+    'T': []
+}
+
+
+assignment = {}
+
+def is_valid(region, color):
+    for neighbor in neighbors[region]:
+        if neighbor in assignment and assignment[neighbor] == color:
+            return False
+    return True
+
+def csp_backtrack(index=0):
+    if index == len(regions):
+        return True
+
+    region = regions[index]
+    for color in colors:
+        if is_valid(region, color):
+            assignment[region] = color
+            if csp_backtrack(index + 1):
+                return True
+            del assignment[region]
+
+    return False
+
+if csp_backtrack():
+    print("Map Coloring Solution:")
+    for region in regions:
+        print(f"{region}: {assignment[region]}")
+else:
+    print("No solution found.")
