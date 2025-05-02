@@ -1,0 +1,22 @@
+print("192311371-Niyaz")
+from heapq import heappop, heappush
+
+graph = {
+    'A': {'B': 1, 'C': 3},
+    'B': {'D': 3, 'E': 1},
+    'C': {'F': 5},
+    'D': {}, 'E': {'F': 2}, 'F': {}
+}
+
+heuristics = {'A': 6, 'B': 4, 'C': 4, 'D': 6, 'E': 2, 'F': 0}
+
+def a_star(start, goal):
+    open_list = [(heuristics[start], 0, start, [start])]
+    while open_list:
+        f, g, node, path = heappop(open_list)
+        if node == goal:
+            return path
+        for neighbor, cost in graph[node].items():
+            heappush(open_list, (g + cost + heuristics[neighbor], g + cost, neighbor, path + [neighbor]))
+
+print("Path:", a_star('A', 'F'))
