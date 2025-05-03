@@ -1,0 +1,48 @@
+print("192311371-Niyaz")
+from collections import Counter
+import math
+
+def entropy(labels):
+    total = len(labels)
+    counts = Counter(labels)
+    return -sum((c/total) * math.log2(c/total) for c in counts.values())
+
+def best_split(data):
+    best_gain, best_feature = 0, -1
+    base_labels = [l for _, l in data]
+    base_entropy = entropy(base_labels)
+    n_features = len(data[0][0])
+    for i in range(n_features):
+        values = set(row[0][i] for row in data)
+        for v in values:
+            left = [l for x, l in data if x[i] <= v]
+            right = [l for x, l in data if x[i] > v]
+            if not left or not right: continue
+            gain = base_entropy - len(left)/len(data)*entropy(left) - len(right)/len(data)*entropy(right)
+            if gain > best_gain:
+                best_gain, best_feature, best_value = gain, i, v
+    return best_feature, best_value if best_gain > 0 else (None, None)
+
+def build(data):
+    labels = [l for _, l in data]
+    if labels.count(labels[0]) == len(labels): return labels[0]
+    f, v = best_split(data)
+    if f is None: return Counter(labels).most_common(1)[0][0]
+    left = [(x, l) for x, l in data if x[f] <= v]
+    right = [(x, l) for x, l in data if x[f] > v]
+    return {"f": f, "v": v, "l": build(left), "r": build(right)}
+
+def predict(tree, x):
+    if not isinstance(tree, dict): return tree
+    return predict(tree["l"] if x[tree["f"]] <= tree["v"] else tree["r"], x)
+
+# Input
+n = int(input("Samples: "))
+data = []
+for _ in range(n):
+    *features, label = input("Features and label: ").split()
+    data.append((list(map(float, features)), int(label)))
+
+tree = build(data)
+test = list(map(float, input("Test sample: ").split()))
+print("Predicted:", predict(tree, test))
